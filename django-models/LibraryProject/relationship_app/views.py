@@ -5,7 +5,7 @@ from .models import Book, Library
 
 
 def list_books(request: HttpRequest) -> HttpResponse:
-	books = Book.objects.select_related("author").all()
+	books = Book.objects.all()
 	# If templates are preferred, render the HTML template; otherwise return plain text
 	if request.GET.get("format") == "html":
 		return render(request, "relationship_app/list_books.html", {"books": books})
