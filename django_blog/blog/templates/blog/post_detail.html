@@ -1,0 +1,48 @@
+{% extends 'blog/base.html' %} {% block content %}
+<article>
+  <h2>{{ object.title }}</h2>
+  <p>{{ object.content }}</p>
+  <p>
+    <small
+      >by {{ object.author.username }} on {{ object.published_date }}</small
+    >
+  </p>
+  {% if user.is_authenticated and user == object.author %}
+  <p>
+    <a href="{% url 'post-edit' object.pk %}">Edit</a> |
+    <a href="{% url 'post-delete' object.pk %}">Delete</a>
+  </p>
+  {% endif %}
+</article>
+
+<section>
+  <h3>Comments</h3>
+  <ul>
+    {% for comment in object.comments.all %}
+    <li>
+      <p>{{ comment.content }}</p>
+      <small
+        >by {{ comment.author.username }} on {{ comment.created_at }}</small
+      >
+      {% if user.is_authenticated and user == comment.author %}
+      <a href="{% url 'comment-edit' comment.pk %}">Edit</a>
+      <a href="{% url 'comment-delete' comment.pk %}">Delete</a>
+      {% endif %}
+    </li>
+    {% empty %}
+    <li>No comments yet.</li>
+    {% endfor %}
+  </ul>
+
+  {% if user.is_authenticated %}
+  <h4>Add a comment</h4>
+  <form method="post" action="{% url 'comment-create' object.pk %}">
+    {% csrf_token %}
+    <textarea name="content" rows="3" cols="40" required></textarea>
+    <button type="submit">Post Comment</button>
+  </form>
+  {% else %}
+  <p><a href="{% url 'login' %}">Log in</a> to comment.</p>
+  {% endif %}
+</section>
+{% endblock %}
