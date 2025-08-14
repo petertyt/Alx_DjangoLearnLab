@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.admin.sites import AlreadyRegistered
 from .models import CustomUser
 
 
-@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
 	fieldsets = (
 		(None, {'fields': ('username', 'password')}),
@@ -23,4 +23,8 @@ class CustomUserAdmin(UserAdmin):
 	search_fields = ('username', 'first_name', 'last_name', 'email')
 	ordering = ('username',)
 
-# Register your models here.
+
+try:
+	admin.site.register(CustomUser, CustomUserAdmin)
+except AlreadyRegistered:
+	pass

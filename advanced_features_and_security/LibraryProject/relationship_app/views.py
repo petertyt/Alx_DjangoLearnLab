@@ -75,7 +75,7 @@ def member_view(request: HttpRequest) -> HttpResponse:
 
 # Secured Book actions
 @login_required
-@permission_required("relationship_app.can_add_book", raise_exception=True)
+@permission_required("relationship_app.can_create", raise_exception=True)
 def add_book(request: HttpRequest) -> HttpResponse:
 	if request.method == "POST":
 		title = request.POST.get("title")
@@ -87,7 +87,7 @@ def add_book(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("relationship_app.can_change_book", raise_exception=True)
+@permission_required("relationship_app.can_edit", raise_exception=True)
 def edit_book(request: HttpRequest, pk: int) -> HttpResponse:
 	book = get_object_or_404(Book, pk=pk)
 	if request.method == "POST":
@@ -100,7 +100,7 @@ def edit_book(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("relationship_app.can_delete_book", raise_exception=True)
+@permission_required("relationship_app.can_delete", raise_exception=True)
 def delete_book(request: HttpRequest, pk: int) -> HttpResponse:
 	book = get_object_or_404(Book, pk=pk)
 	if request.method == "POST":
