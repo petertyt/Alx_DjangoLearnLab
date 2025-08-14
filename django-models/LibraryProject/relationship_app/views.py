@@ -6,6 +6,7 @@ from .models import Library
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 
 def list_books(request: HttpRequest) -> HttpResponse:
@@ -38,3 +39,34 @@ def register(request: HttpRequest) -> HttpResponse:
 		form = UserCreationForm()
 
 	return render(request, "relationship_app/register.html", {"form": form})
+
+
+# Role checks
+def _is_admin(user) -> bool:
+	return hasattr(user, "profile") and user.profile.role == "Admin"
+
+
+def _is_librarian(user) -> bool:
+	return hasattr(user, "profile") and user.profile.role == "Librarian"
+
+
+def _is_member(user) -> bool:
+	return hasattr(user, "profile") and user.profile.role == "Member"
+
+
+@login_required
+@user_passes_test(_is_admin)
+def admin_view(request: HttpRequest) -> HttpResponse:
+	return render(request, "relationship_app/admin_view.html")
+
+
+@login_required
+@user_passes_test(_is_librarian)
+def librarian_view(request: HttpRequest) -> HttpResponse:
+	return render(request, "relationship_app/librarian_view.html")
+
+
+@login_required
+@user_passes_test(_is_member)
+def member_view(request: HttpRequest) -> HttpResponse:
+	return render(request, "relationship_app/member_view.html")
