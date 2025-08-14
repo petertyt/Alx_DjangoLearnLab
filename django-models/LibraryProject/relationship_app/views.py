@@ -5,6 +5,7 @@ from .models import Book
 from .models import Library
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
+from django.contrib.auth import login
 
 
 def list_books(request: HttpRequest) -> HttpResponse:
@@ -30,8 +31,9 @@ def register(request: HttpRequest) -> HttpResponse:
 	if request.method == "POST":
 		form = UserCreationForm(request.POST)
 		if form.is_valid():
-			form.save()
-			return redirect("login")
+			user = form.save()
+			login(request, user)
+			return redirect("list_books")
 	else:
 		form = UserCreationForm()
 
