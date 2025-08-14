@@ -1,0 +1,17 @@
+
+---
+
+## `update.md`
+```markdown
+# Update the Book title
+
+```python
+from bookshelf.models import Book
+
+book = Book.objects.get(title="1984")
+book.title = "Nineteen Eighty-Four"
+book.save()
+
+Book.objects.get(pk=book.pk).title
+# Expected output:
+# 'Nineteen Eighty-Four'
