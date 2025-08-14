@@ -49,8 +49,9 @@ class BookAPITests(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # Authenticated succeeds
-        self.client.force_authenticate(user=self.user)
+        # Authenticated succeeds (login using session auth)
+        logged_in = self.client.login(username="tester", password="pass1234!")
+        self.assertTrue(logged_in)
         response = self.client.post(
             url,
             {"title": "Homage to Catalonia", "publication_year": 1938, "author": self.author_orwell.pk},
