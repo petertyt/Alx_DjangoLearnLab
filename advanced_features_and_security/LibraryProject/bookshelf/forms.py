@@ -11,3 +11,7 @@ class BookForm(forms.ModelForm):
 		title = self.cleaned_data.get("title", "").strip()
 		return title
 
+
+class ExampleForm(forms.Form):
+	title = forms.CharField(max_length=255)
+
