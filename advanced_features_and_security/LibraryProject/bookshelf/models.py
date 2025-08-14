@@ -19,3 +19,6 @@ class Book(models.Model):
 #         pass
 #     def create_superuser(self, username, email=None, password=None, **extra_fields):
 #         pass
+
+# can_create
+# can_delete
