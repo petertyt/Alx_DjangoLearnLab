@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import permission_required
 
 
 def list_books(request: HttpRequest) -> HttpResponse:
@@ -70,3 +71,39 @@ def librarian_view(request: HttpRequest) -> HttpResponse:
 @user_passes_test(_is_member)
 def member_view(request: HttpRequest) -> HttpResponse:
 	return render(request, "relationship_app/member_view.html")
+
+
+# Secured Book actions
+@login_required
+@permission_required("relationship_app.can_add_book", raise_exception=True)
+def add_book(request: HttpRequest) -> HttpResponse:
+	if request.method == "POST":
+		title = request.POST.get("title")
+		author_id = request.POST.get("author_id")
+		if title and author_id:
+			Book.objects.create(title=title, author_id=author_id)
+			return HttpResponse("Book created")
+	return HttpResponse("Provide title and author_id via POST")
+
+
+@login_required
+@permission_required("relationship_app.can_change_book", raise_exception=True)
+def edit_book(request: HttpRequest, pk: int) -> HttpResponse:
+	book = get_object_or_404(Book, pk=pk)
+	if request.method == "POST":
+		title = request.POST.get("title")
+		if title:
+			book.title = title
+			book.save()
+			return HttpResponse("Book updated")
+	return HttpResponse("Provide title via POST")
+
+
+@login_required
+@permission_required("relationship_app.can_delete_book", raise_exception=True)
+def delete_book(request: HttpRequest, pk: int) -> HttpResponse:
+	book = get_object_or_404(Book, pk=pk)
+	if request.method == "POST":
+		book.delete()
+		return HttpResponse("Book deleted")
+	return HttpResponse("Send POST to delete book")
