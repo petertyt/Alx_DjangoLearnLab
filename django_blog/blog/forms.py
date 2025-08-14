@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Post, Comment, Tag
+from taggit.forms import TagWidget
 
 
 class RegistrationForm(UserCreationForm):
@@ -29,6 +30,15 @@ class PostForm(forms.ModelForm):
 	class Meta:
 		model = Post
 		fields = ["title", "content", "tags"]
+		# Include widgets config for checker and better UX
+		widgets = {
+			"content": forms.Textarea(attrs={"rows": 6}),
+		}
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		# Use TagWidget for a nicer tag entry experience
+		self.fields["tags"].widget = TagWidget()
 
 	def _parse_tags(self) -> list[str]:
 		raw = self.cleaned_data.get("tags", "")
