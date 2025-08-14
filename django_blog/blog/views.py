@@ -60,6 +60,26 @@ class PostListView(ListView):
 		return qs
 
 
+class PostByTagListView(ListView):
+	model = Post
+	template_name = "blog/post_list.html"
+	context_object_name = "posts"
+
+	def get_queryset(self):
+		tag_slug = self.kwargs.get("tag_slug")
+		return (
+			Post.objects.filter(tags__name=tag_slug)
+			.select_related("author")
+			.prefetch_related("tags")
+			.order_by("-published_date")
+		)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context["current_tag"] = self.kwargs.get("tag_slug")
+		return context
+
+
 class PostDetailView(DetailView):
 	model = Post
 	template_name = "blog/post_detail.html"

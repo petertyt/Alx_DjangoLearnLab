@@ -15,6 +15,7 @@ urlpatterns = [
 	path('posts/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
 	path('posts/<int:pk>/edit/', views.PostUpdateView.as_view(), name='post-edit'),
 	path('posts/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
+	path('tags/<slug:tag_slug>/', views.PostByTagListView.as_view(), name='post-by-tag'),
 
 	# Aliases to satisfy string checks
 	path('post/new/', views.PostCreateView.as_view(), name='post-create-alias'),
