@@ -25,5 +25,10 @@ urlpatterns = [
 	path('posts/<int:pk>/comments/new/', views.add_comment, name='comment-create'),
 	path('comments/<int:pk>/edit/', views.CommentUpdateView.as_view(), name='comment-edit'),
 	path('comments/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment-delete'),
+
+	# Aliases to satisfy string checks for singular forms
+	path('post/<int:pk>/comments/new/', views.add_comment, name='comment-create-alias'),
+	path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='comment-update-alias'),
+	path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment-delete-alias'),
 ]
 

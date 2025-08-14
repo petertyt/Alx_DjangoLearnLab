@@ -7,7 +7,13 @@
       >by {{ object.author.username }} on {{ object.published_date }}</small
     >
   </p>
-  {% if user.is_authenticated and user == object.author %}
+  {% if object.tags.all %}
+  <p>
+    Tags: {% for tag in object.tags.all %}
+    <a href="{% url 'post-list' %}?tag={{ tag.name }}">#{{ tag.name }}</a>
+    {% endfor %}
+  </p>
+  {% endif %} {% if user.is_authenticated and user == object.author %}
   <p>
     <a href="{% url 'post-edit' object.pk %}">Edit</a> |
     <a href="{% url 'post-delete' object.pk %}">Delete</a>

@@ -7,8 +7,9 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
+from django.db.models import Q
 from .forms import RegistrationForm, PostForm, CommentForm
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 
 
 def register(request):
@@ -45,6 +46,16 @@ class PostListView(ListView):
 	template_name = "blog/post_list.html"
 	context_object_name = "posts"
 	ordering = ["-published_date"]
+
+	def get_queryset(self):
+		qs = super().get_queryset().select_related("author").prefetch_related("tags")
+		q = self.request.GET.get("q")
+		tag = self.request.GET.get("tag")
+		if q:
+			qs = qs.filter(Q(title__icontains=q) | Q(content__icontains=q) | Q(tags__name__icontains=q)).distinct()
+		if tag:
+			qs = qs.filter(tags__name=tag)
+		return qs
 
 
 class PostDetailView(DetailView):

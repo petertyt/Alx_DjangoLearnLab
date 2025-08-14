@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 
 
 class RegistrationForm(UserCreationForm):
@@ -24,9 +24,27 @@ class RegistrationForm(UserCreationForm):
 
 
 class PostForm(forms.ModelForm):
+	tags = forms.CharField(required=False, help_text="Comma-separated tags")
+
 	class Meta:
 		model = Post
-		fields = ["title", "content"]
+		fields = ["title", "content", "tags"]
+
+	def _parse_tags(self) -> list[str]:
+		raw = self.cleaned_data.get("tags", "")
+		return [t.strip() for t in raw.split(',') if t.strip()]
+
+	def save(self, commit=True):
+		post: Post = super().save(commit=commit)
+		# Handle tags creation/association
+		tag_names = getattr(self, 'cleaned_data', {}).get('tags', '')
+		tag_list = [t.strip() for t in tag_names.split(',') if t.strip()]
+		if commit:
+			post.tags.clear()
+			for name in tag_list:
+				tag, _ = Tag.objects.get_or_create(name=name)
+				post.tags.add(tag)
+		return post
 
 
 class CommentForm(forms.ModelForm):
