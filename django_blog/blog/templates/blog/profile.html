@@ -1,0 +1,25 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<h2>Profile</h2>
+<form method="post">
+  {% csrf_token %}
+  <p>
+    <label>Username:</label>
+    <input type="text" value="{{ request.user.username }}" disabled />
+  </p>
+  <p>
+    <label for="email">Email:</label>
+    <input id="email" type="email" name="email" value="{{ request.user.email }}" />
+  </p>
+  <p>
+    <label for="first_name">First name:</label>
+    <input id="first_name" type="text" name="first_name" value="{{ request.user.first_name }}" />
+  </p>
+  <p>
+    <label for="last_name">Last name:</label>
+    <input id="last_name" type="text" name="last_name" value="{{ request.user.last_name }}" />
+  </p>
+  <button type="submit">Save</button>
+</form>
+{% endblock %}
+
