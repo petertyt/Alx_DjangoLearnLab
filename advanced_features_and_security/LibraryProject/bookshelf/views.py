@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.decorators import permission_required
-from .forms import BookForm
+from .forms import BookForm, ExampleForm
 from .models import Book
 
 @permission_required('relationship_app.can_view', raise_exception=True)
