@@ -134,7 +134,8 @@ curl -X GET http://127.0.0.1:8000/api/accounts/followers/ \
 - **POST** `/api/posts/{id}/like/` - Like/unlike a post
 - **GET** `/api/posts/my_posts/` - Get current user's posts
 - **GET** `/api/posts/liked_posts/` - Get posts liked by current user
-- **GET** `/api/posts/feed/` - Get feed of posts from followed users
+- **GET** `/api/posts/feed/` - Get feed of posts from followed users (router-based)
+- **GET** `/api/feed/` - Get feed of posts from followed users (explicit route)
 - **GET** `/api/posts/{id}/retrieve_with_comments/` - Get post with all comments
 
 ### Comments
@@ -272,6 +273,13 @@ curl -X POST http://127.0.0.1:8000/api/accounts/follow/2/ \
 
 ```bash
 curl -X GET http://127.0.0.1:8000/api/posts/feed/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 11b. Get User Feed (Explicit Route)
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/feed/ \
   -H "Authorization: Token your-auth-token-here"
 ```
 
