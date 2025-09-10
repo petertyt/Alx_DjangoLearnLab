@@ -22,6 +22,11 @@ class Post(models.Model):
     content = models.TextField(
         help_text="The main content of the post"
     )
+    summary = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Optional summary of the post"
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         help_text="When the post was created"
@@ -77,6 +82,11 @@ class Comment(models.Model):
     )
     content = models.TextField(
         help_text="The content of the comment"
+    )
+    reply_to = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Optional reply to another comment"
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
