@@ -21,6 +21,8 @@ class Post(models.Model):
     )
     content = models.TextField()
     description = models.TextField(
+        blank=True,
+        null=True,
         help_text="The main content of the post"
     )
     summary = models.TextField(
@@ -83,6 +85,8 @@ class Comment(models.Model):
     )
     content = models.TextField()
     message = models.TextField(
+        blank=True,
+        null=True,
         help_text="The content of the comment"
     )
     reply_to = models.TextField(

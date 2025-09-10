@@ -105,3 +105,95 @@ def logout(request):
             'error': 'Error during logout'
         }, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def follow_user(request, user_id):
+    """
+    Follow a user.
+    
+    POST /api/accounts/follow/{user_id}/
+    """
+    try:
+        user_to_follow = User.objects.get(id=user_id)
+        if user_to_follow == request.user:
+            return Response({
+                'error': 'Cannot follow yourself'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user_to_follow in request.user.following.all():
+            return Response({
+                'error': 'Already following this user'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        request.user.following.add(user_to_follow)
+        
+        return Response({
+            'message': 'Followed successfully',
+            'following_count': request.user.following_count
+        }, status=status.HTTP_200_OK)
+        
+    except User.DoesNotExist:
+        return Response({
+            'error': 'User not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unfollow_user(request, user_id):
+    """
+    Unfollow a user.
+    
+    POST /api/accounts/unfollow/{user_id}/
+    """
+    try:
+        user_to_unfollow = User.objects.get(id=user_id)
+        if user_to_unfollow == request.user:
+            return Response({
+                'error': 'Cannot unfollow yourself'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user_to_unfollow not in request.user.following.all():
+            return Response({
+                'error': 'Not following this user'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        request.user.following.remove(user_to_unfollow)
+        
+        return Response({
+            'message': 'Unfollowed successfully',
+            'following_count': request.user.following_count
+        }, status=status.HTTP_200_OK)
+        
+    except User.DoesNotExist:
+        return Response({
+            'error': 'User not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def following_list(request):
+    """
+    Get list of users that the current user is following.
+    
+    GET /api/accounts/following/
+    """
+    following_users = request.user.following.all()
+    serializer = UserProfileSerializer(following_users, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def followers_list(request):
+    """
+    Get list of users that follow the current user.
+    
+    GET /api/accounts/followers/
+    """
+    followers = request.user.followers.all()
+    serializer = UserProfileSerializer(followers, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+

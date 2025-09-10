@@ -96,6 +96,21 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def feed(self, request):
+        """Get feed of posts from users that the current user follows."""
+        # Get posts from users that the current user follows
+        following_users = request.user.following.all()
+        posts = self.get_queryset().filter(author__in=following_users)
+        
+        page = self.paginate_queryset(posts)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(posts, many=True)
+        return Response(serializer.data)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     """

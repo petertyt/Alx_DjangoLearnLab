@@ -93,6 +93,13 @@ The API will be available at `http://127.0.0.1:8000/`
 - **GET** `/api/accounts/profile/` - Get current user's profile
 - **PUT/PATCH** `/api/accounts/profile/update/` - Update user profile
 
+### User Follows
+
+- **POST** `/api/accounts/follow/{user_id}/` - Follow a user
+- **POST** `/api/accounts/unfollow/{user_id}/` - Unfollow a user
+- **GET** `/api/accounts/following/` - Get list of users you're following
+- **GET** `/api/accounts/followers/` - Get list of your followers
+
 ### Posts
 
 - **GET** `/api/posts/` - List all posts (with pagination, search, filtering)
