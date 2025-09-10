@@ -3,8 +3,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
 from .models import User
+
+User = get_user_model()
 from .serializers import (
     UserRegistrationSerializer, 
     UserLoginSerializer, 
@@ -102,3 +104,4 @@ def logout(request):
         return Response({
             'error': 'Error during logout'
         }, status=status.HTTP_400_BAD_REQUEST)
+

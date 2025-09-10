@@ -20,3 +20,4 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = UserAdmin.add_fieldsets + (
         ('Additional Info', {'fields': ('bio', 'profile_picture')}),
     )
+

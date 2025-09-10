@@ -7,6 +7,10 @@ A Django REST Framework-based Social Media API with user authentication, profile
 - **User Authentication**: Token-based authentication with registration and login
 - **Custom User Model**: Extended user model with bio, profile picture, and followers
 - **Profile Management**: Update user profiles with bio and profile pictures
+- **Posts System**: Create, read, update, and delete posts with like functionality
+- **Comments System**: Add comments to posts with like functionality
+- **Search & Filtering**: Search posts by title/content and filter by author
+- **Pagination**: Efficient handling of large datasets
 - **RESTful API**: Clean API endpoints following REST principles
 
 ## Project Structure
@@ -28,8 +32,20 @@ social_media_api/
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── posts/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── views.py
+│   └── permissions.py
 ├── manage.py
 ├── requirements.txt
+├── test_api.py
+├── test_posts_api.py
 └── README.md
 ```
 
@@ -76,6 +92,28 @@ The API will be available at `http://127.0.0.1:8000/`
 
 - **GET** `/api/accounts/profile/` - Get current user's profile
 - **PUT/PATCH** `/api/accounts/profile/update/` - Update user profile
+
+### Posts
+
+- **GET** `/api/posts/` - List all posts (with pagination, search, filtering)
+- **POST** `/api/posts/` - Create a new post
+- **GET** `/api/posts/{id}/` - Get post details
+- **PUT/PATCH** `/api/posts/{id}/` - Update a post
+- **DELETE** `/api/posts/{id}/` - Delete a post
+- **POST** `/api/posts/{id}/like/` - Like/unlike a post
+- **GET** `/api/posts/my_posts/` - Get current user's posts
+- **GET** `/api/posts/liked_posts/` - Get posts liked by current user
+- **GET** `/api/posts/{id}/retrieve_with_comments/` - Get post with all comments
+
+### Comments
+
+- **GET** `/api/comments/` - List all comments (with pagination, filtering)
+- **POST** `/api/comments/` - Create a new comment
+- **GET** `/api/comments/{id}/` - Get comment details
+- **PUT/PATCH** `/api/comments/{id}/` - Update a comment
+- **DELETE** `/api/comments/{id}/` - Delete a comment
+- **POST** `/api/comments/{id}/like/` - Like/unlike a comment
+- **GET** `/api/comments/my_comments/` - Get current user's comments
 
 ## API Usage Examples
 
@@ -146,6 +184,51 @@ curl -X PATCH http://127.0.0.1:8000/api/accounts/profile/update/ \
   }'
 ```
 
+### 5. Create a Post
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/posts/ \
+  -H "Authorization: Token your-auth-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "My First Post",
+    "content": "This is the content of my first post!"
+  }'
+```
+
+### 6. List Posts with Search
+
+```bash
+curl -X GET "http://127.0.0.1:8000/api/posts/?search=first&page=1" \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 7. Like a Post
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/posts/1/like/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 8. Create a Comment
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/comments/ \
+  -H "Authorization: Token your-auth-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post": 1,
+    "content": "Great post! Thanks for sharing."
+  }'
+```
+
+### 9. Get Posts with Comments
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/posts/1/retrieve_with_comments/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
 ## User Model
 
 The custom User model extends Django's AbstractUser with the following additional fields:
@@ -209,3 +292,4 @@ This is the foundation of the Social Media API. Future enhancements could includ
 ## License
 
 This project is part of the ALX Django Learning Lab curriculum.
+
