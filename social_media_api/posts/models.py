@@ -19,7 +19,8 @@ class Post(models.Model):
         max_length=200, 
         help_text="The title of the post"
     )
-    content = models.TextField(
+    content = models.TextField()
+    description = models.TextField(
         help_text="The main content of the post"
     )
     summary = models.TextField(
@@ -80,7 +81,8 @@ class Comment(models.Model):
         related_name='comments',
         help_text="The user who wrote this comment"
     )
-    content = models.TextField(
+    content = models.TextField()
+    message = models.TextField(
         help_text="The content of the comment"
     )
     reply_to = models.TextField(
