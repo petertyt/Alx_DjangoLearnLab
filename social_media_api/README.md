@@ -100,6 +100,30 @@ The API will be available at `http://127.0.0.1:8000/`
 - **GET** `/api/accounts/following/` - Get list of users you're following
 - **GET** `/api/accounts/followers/` - Get list of your followers
 
+#### Follow User Example
+```bash
+curl -X POST http://127.0.0.1:8000/api/accounts/follow/2/ \
+  -H "Authorization: Token your_token_here"
+```
+
+#### Unfollow User Example
+```bash
+curl -X POST http://127.0.0.1:8000/api/accounts/unfollow/2/ \
+  -H "Authorization: Token your_token_here"
+```
+
+#### Get Following List Example
+```bash
+curl -X GET http://127.0.0.1:8000/api/accounts/following/ \
+  -H "Authorization: Token your_token_here"
+```
+
+#### Get Followers List Example
+```bash
+curl -X GET http://127.0.0.1:8000/api/accounts/followers/ \
+  -H "Authorization: Token your_token_here"
+```
+
 ### Posts
 
 - **GET** `/api/posts/` - List all posts (with pagination, search, filtering)
@@ -110,6 +134,7 @@ The API will be available at `http://127.0.0.1:8000/`
 - **POST** `/api/posts/{id}/like/` - Like/unlike a post
 - **GET** `/api/posts/my_posts/` - Get current user's posts
 - **GET** `/api/posts/liked_posts/` - Get posts liked by current user
+- **GET** `/api/posts/feed/` - Get feed of posts from followed users
 - **GET** `/api/posts/{id}/retrieve_with_comments/` - Get post with all comments
 
 ### Comments
@@ -236,13 +261,42 @@ curl -X GET http://127.0.0.1:8000/api/posts/1/retrieve_with_comments/ \
   -H "Authorization: Token your-auth-token-here"
 ```
 
+### 10. Follow a User
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/accounts/follow/2/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 11. Get User Feed
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/posts/feed/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 12. Get Following List
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/accounts/following/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 13. Unfollow a User
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/accounts/unfollow/2/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
 ## User Model
 
 The custom User model extends Django's AbstractUser with the following additional fields:
 
 - `bio`: TextField for user's bio/description (max 500 characters)
 - `profile_picture`: ImageField for user's profile picture
-- `followers`: ManyToManyField for users that this user follows
+- `following`: ManyToManyField for users that this user follows
+- `followers`: Related field for users who follow this user (via following field)
 - `created_at`: DateTimeField for account creation timestamp
 - `updated_at`: DateTimeField for last update timestamp
 
