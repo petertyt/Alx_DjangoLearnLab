@@ -4,15 +4,17 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .serializers import (
     PostListSerializer, 
     PostDetailSerializer, 
     PostCreateUpdateSerializer,
     CommentSerializer,
     CommentCreateSerializer,
-    PostWithCommentsSerializer
+    PostWithCommentsSerializer,
+    LikeSerializer
 )
+from notifications.services import NotificationService
 from .permissions import IsOwnerOrReadOnly
 
 
@@ -53,16 +55,39 @@ class PostViewSet(viewsets.ModelViewSet):
         post = self.get_object()
         user = request.user
         
-        if post.likes.filter(id=user.id).exists():
-            post.likes.remove(user)
+        # Check if user has already liked this post
+        like, created = Like.objects.get_or_create(user=user, post=post)
+        
+        if not created:
+            # Unlike the post
+            like.delete()
             message = 'Post unliked'
         else:
-            post.likes.add(user)
+            # Like the post and create notification
+            NotificationService.create_like_notification(post, user)
             message = 'Post liked'
         
         return Response({
             'message': message,
-            'likes_count': post.likes_count
+            'likes_count': post.post_likes.count()
+        })
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def unlike(self, request, pk=None):
+        """Unlike a post."""
+        post = self.get_object()
+        user = request.user
+        
+        try:
+            like = Like.objects.get(user=user, post=post)
+            like.delete()
+            message = 'Post unliked'
+        except Like.DoesNotExist:
+            message = 'Post was not liked'
+        
+        return Response({
+            'message': message,
+            'likes_count': post.post_likes.count()
         })
 
     @action(detail=True, methods=['get'])
@@ -135,8 +160,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Comment.objects.select_related('author', 'post').prefetch_related('likes')
 
     def perform_create(self, serializer):
-        """Set the author when creating a comment."""
-        serializer.save(author=self.request.user)
+        """Set the author when creating a comment and create notification."""
+        comment = serializer.save(author=self.request.user)
+        # Create notification for the post author
+        NotificationService.create_comment_notification(comment.post, self.request.user)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):

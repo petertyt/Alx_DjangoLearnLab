@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Post, Comment
+from .models import Post, Comment, Like
 
 User = get_user_model()
 
@@ -52,7 +52,8 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Post
-        fields = ('title', 'content')
+        fields = ('id', 'title', 'content', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'created_at', 'updated_at')
 
     def create(self, validated_data):
         """Create a new post with the current user as author."""
@@ -126,3 +127,21 @@ class PostWithCommentsSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.likes.filter(id=request.user.id).exists()
         return False
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Like model.
+    """
+    user_username = serializers.CharField(source='user.username', read_only=True)
+    post_title = serializers.CharField(source='post.title', read_only=True)
+
+    class Meta:
+        model = Like
+        fields = [
+            'id',
+            'user_username',
+            'post_title',
+            'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']

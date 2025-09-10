@@ -137,6 +137,8 @@ curl -X GET http://127.0.0.1:8000/api/accounts/followers/ \
 - **GET** `/api/posts/feed/` - Get feed of posts from followed users (router-based)
 - **GET** `/api/feed/` - Get feed of posts from followed users (explicit route)
 - **GET** `/api/posts/{id}/retrieve_with_comments/` - Get post with all comments
+- **POST** `/api/posts/{id}/like/` - Like a post
+- **POST** `/api/posts/{id}/unlike/` - Unlike a post
 
 ### Comments
 
@@ -145,6 +147,14 @@ curl -X GET http://127.0.0.1:8000/api/accounts/followers/ \
 - **GET** `/api/comments/{id}/` - Get comment details
 - **PUT/PATCH** `/api/comments/{id}/` - Update a comment
 - **DELETE** `/api/comments/{id}/` - Delete a comment
+
+### Notifications
+
+- **GET** `/api/notifications/` - List user notifications (with pagination, filtering)
+- **GET** `/api/notifications/unread_count/` - Get count of unread notifications
+- **POST** `/api/notifications/mark_as_read/` - Mark specific notifications as read
+- **POST** `/api/notifications/mark_all_as_read/` - Mark all notifications as read
+- **POST** `/api/notifications/{id}/mark_single_as_read/` - Mark single notification as read
 - **POST** `/api/comments/{id}/like/` - Like/unlike a comment
 - **GET** `/api/comments/my_comments/` - Get current user's comments
 
@@ -295,6 +305,43 @@ curl -X GET http://127.0.0.1:8000/api/accounts/following/ \
 ```bash
 curl -X POST http://127.0.0.1:8000/api/accounts/unfollow/2/ \
   -H "Authorization: Token your-auth-token-here"
+```
+
+### 14. Like a Post
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/posts/1/like/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 15. Unlike a Post
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/posts/1/unlike/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 16. Get Notifications
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/notifications/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 17. Get Unread Notification Count
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/notifications/unread_count/ \
+  -H "Authorization: Token your-auth-token-here"
+```
+
+### 18. Mark Notifications as Read
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/notifications/mark_as_read/ \
+  -H "Authorization: Token your-auth-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{"notification_ids": [1, 2, 3]}'
 ```
 
 ## User Model

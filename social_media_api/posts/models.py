@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -124,3 +125,33 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return reverse('comment-detail', kwargs={'pk': self.pk})
+
+
+class Like(models.Model):
+    """
+    Like model for tracking post likes.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='likes',
+        help_text="The user who liked the post"
+    )
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='post_likes',
+        help_text="The post that was liked"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.post.title}"
+
+    def clean(self):
+        if self.user == self.post.author:
+            raise ValidationError("Users cannot like their own posts.")

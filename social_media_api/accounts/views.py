@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import login, get_user_model
 from .models import User
+from notifications.services import NotificationService
 
 User = get_user_model()
 CustomUser = get_user_model()
@@ -131,6 +132,9 @@ def follow_user(request, user_id):
         
         request.user.following.add(user_to_follow)
         
+        # Create notification for the followed user
+        NotificationService.create_follow_notification(user_to_follow, request.user)
+        
         return Response({
             'message': 'Followed successfully',
             'following_count': request.user.following_count
@@ -163,6 +167,9 @@ def unfollow_user(request, user_id):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         request.user.following.remove(user_to_unfollow)
+        
+        # Create notification for the unfollowed user
+        NotificationService.create_unfollow_notification(user_to_unfollow, request.user)
         
         return Response({
             'message': 'Unfollowed successfully',
