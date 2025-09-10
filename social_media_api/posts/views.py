@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status, filters, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -96,12 +96,12 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def feed(self, request):
         """Get feed of posts from users that the current user follows."""
         # Get posts from users that the current user follows
         following_users = request.user.following.all()
-        posts = self.get_queryset().filter(author__in=following_users)
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
         
         page = self.paginate_queryset(posts)
         if page is not None:
