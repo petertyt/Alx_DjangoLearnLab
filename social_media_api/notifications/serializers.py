@@ -26,6 +26,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             'message',
             'target_title',
             'is_read',
+            'timestamp',
             'created_at'
         ]
         read_only_fields = ['id', 'created_at']
@@ -55,6 +56,7 @@ class NotificationListSerializer(serializers.ModelSerializer):
             'verb',
             'message',
             'is_read',
+            'timestamp',
             'created_at'
         ]
 
