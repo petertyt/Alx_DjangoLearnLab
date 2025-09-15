@@ -18,12 +18,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from .health_views import health_check, detailed_health_check
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
     path('api/', include('posts.urls')),
     path('api/', include('notifications.urls')),
+    # Health check endpoints
+    path('health/', health_check, name='health-check'),
+    path('health/detailed/', detailed_health_check, name='detailed-health-check'),
 ]
 
 # Serve media files during development
