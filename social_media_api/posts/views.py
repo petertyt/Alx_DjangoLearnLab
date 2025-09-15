@@ -1,9 +1,10 @@
-from rest_framework import viewsets, status, filters, permissions
+from rest_framework import viewsets, status, filters, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from .models import Post, Comment, Like
 from .serializers import (
     PostListSerializer, 
@@ -15,6 +16,7 @@ from .serializers import (
     LikeSerializer
 )
 from notifications.services import NotificationService
+from notifications.models import Notification
 from .permissions import IsOwnerOrReadOnly
 
 
@@ -52,11 +54,11 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
         """Like or unlike a post."""
-        post = self.get_object()
+        post = get_object_or_404(Post, pk=pk)
         user = request.user
         
         # Check if user has already liked this post
-        like, created = Like.objects.get_or_create(user=user, post=post)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
         
         if not created:
             # Unlike the post
@@ -64,7 +66,12 @@ class PostViewSet(viewsets.ModelViewSet):
             message = 'Post unliked'
         else:
             # Like the post and create notification
-            NotificationService.create_like_notification(post, user)
+            Notification.objects.create(
+                recipient=post.author,
+                actor=user,
+                verb='like',
+                target=post
+            )
             message = 'Post liked'
         
         return Response({
@@ -75,7 +82,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def unlike(self, request, pk=None):
         """Unlike a post."""
-        post = self.get_object()
+        post = get_object_or_404(Post, pk=pk)
         user = request.user
         
         try:
